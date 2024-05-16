@@ -1,56 +1,92 @@
-from collections import Counter
-
 class SatSolver:
-    def __init__(self):
-        self.model = []
+    def __init__(self, clauses):
+        self.clauses = [clause[:] for clause in clauses]
+        self.assignment = set()
 
-    def dpll(self, clauses, assignment):
-        if not clauses:
-            self.model = assignment
-            return True
-        if any([not clause for clause in clauses]):
+    def unit_propagate(self):
+        changed = True
+        while changed:
+            changed = False
+            unit_clauses = [c for c in self.clauses if len(c) == 1]
+            for unit in unit_clauses:
+                literal = unit[0]
+                if -literal in self.assignment:
+                    return False
+                if literal not in self.assignment:
+                    self.assignment.add(literal)
+                    self.clauses = [c for c in self.clauses if literal not in c]
+                    for c in self.clauses:
+                        if -literal in c:
+                            c.remove(-literal)
+                    changed = True
+        return True
+
+    def choose_literal(self):
+        for clause in self.clauses:
+            for literal in clause:
+                return literal
+        return None
+
+    def dpll(self):
+        if not self.unit_propagate():
             return False
-        
-        variable = self.select_unassigned_variable(clauses)
-        
-        new_clauses = self.simplify(clauses, variable)
-        if self.dpll(new_clauses, assignment + [variable]):
+
+        if not self.clauses:
             return True
-        
-        new_clauses = self.simplify(clauses, -variable)
-        if self.dpll(new_clauses, assignment + [-variable]):
+
+        literal = self.choose_literal()
+        if literal is None:
+            return False
+
+        solver_with_literal = SatSolver([clause[:] for clause in self.clauses])
+        solver_with_literal.assignment = self.assignment.copy()
+        solver_with_literal.assignment.add(literal)
+        if solver_with_literal.dpll():
+            self.assignment = solver_with_literal.assignment
             return True
-        
+
+        solver_with_neg_literal = SatSolver([clause[:] for clause in self.clauses])
+        solver_with_neg_literal.assignment = self.assignment.copy()
+        solver_with_neg_literal.assignment.add(-literal)
+        if solver_with_neg_literal.dpll():
+            self.assignment = solver_with_neg_literal.assignment
+            return True
+
         return False
-    
-    def select_unassigned_variable_moms(self, clauses):
-        literal_count = Counter()
-        min_size = float('inf')
-        
-        for clause in clauses:
-            if len(clause) < min_size:
-                min_size = len(clause)
-        
-        for clause in clauses:
-            if len(clause) == min_size:
-                for literal in clause:
-                    literal_count[literal] += 1
-        
-        most_common = literal_count.most_common(1)
-        return abs(most_common[0][0]) if most_common else None
-    
-    def simplify(self, clauses, literal):
-        new_clauses = []
-        for clause in clauses:
-            if literal in clause:
-                continue
-            new_clause = [x for x in clause if x != -literal]
-            new_clauses.append(new_clause)
-        return new_clauses
-    
-    def solve(self, clauses):
-        self.model = []
-        return self.dpll(clauses, [])
-    
-    def get_model(self):
-        return self.model
+
+    def solve(self):
+        return self.dpll()
+
+# Testni primeri
+
+# Testni primer 1: Zadovoljiv problem
+clauses1 = [
+    [1, -3, 4],
+    [-1, 2, 3],
+    [-1, -2, -4],
+    [1, -2, 3]
+]
+
+# Testni primer 2: Nezadovoljiv problem
+clauses2 = [
+    [1, 2, 3],
+    [-1, -2, -3],
+    [1, -2, 3],
+    [-1, 2, -3]
+]
+
+# Testni primer 3: Zadovoljiv problem
+clauses3 = [
+    [1, 2, 3],
+    [-1, -2, 3],
+    [-1, 2, -3],
+    [1, -2, -3]
+]
+
+solver1 = SatSolver(clauses1)
+# solver2 = SatSolver(clauses2)
+# solver3 = SatSolver(clauses3)
+
+print("Testni primer 1:", "Zadovoljiv" if solver1.solve() else "Nezadovoljiv")
+# print("Testni primer 2:", "Zadovoljiv" if solver2.solve() else "Nezadovoljiv")
+# print("Testni primer 3:", "Zadovoljiv" if solver3.solve() else "Nezadovoljiv")

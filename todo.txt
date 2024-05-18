@@ -1,0 +1,7 @@
+Naredi primerjave:
+- DPLL (brez unit_propagate, brez pure_literal, zaporedno zbiranje literalov)
+- DPLL (z unit_propagate)
+- DPLL (z pure_literal)
+- DPLL (pametno zbiranje literalov)
+- CDCL
+- Glucose

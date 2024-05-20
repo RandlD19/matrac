@@ -285,3 +285,8 @@ class SatSolver:
         elif method == 3:
             return self.dpll_vsids()
 
+class CDCLSatSolver:
+    def __init__(self, clauses):
+        self.clauses = clauses
+
+    

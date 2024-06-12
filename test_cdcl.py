@@ -74,7 +74,7 @@ from cdcl import *
 # trail.add_literal(literal11)
 # trail.add_literal(literal12)
 # # uips = trail.find_uips()
-# print(trail.get_conflict_clause())
+# print(trail.get_learned_clause())
 
 # TEST 2
 # ========================
@@ -100,7 +100,7 @@ from cdcl import *
 # trail.add_literal(literal_b)
 # trail.add_literal(literal_c)
 
-# print(trail.get_conflict_clause())
+# print(trail.get_learned_clause())
 
 # TEST 3
 # ========================
@@ -126,7 +126,7 @@ from cdcl import *
 # trail.add_literal(literal_b)
 # trail.add_literal(literal_c)
 
-# print(trail.get_conflict_clause())
+# print(trail.get_learned_clause())
 
 # TEST 4
 # ========================
@@ -152,7 +152,7 @@ from cdcl import *
 # trail.add_literal(literal_b)
 # trail.add_literal(literal_c)
 
-# print(trail.get_conflict_clause())
+# print(trail.get_learned_clause())
 
 # TEST 4
 # ========================
@@ -207,52 +207,68 @@ from cdcl import *
 # trail.add_literal(literal_4)
 # trail.add_literal(literal_none)
 
-# print(trail.get_conflict_clause())
+# print(trail.get_learned_clause())
 
 
 # TEST 6
 # ========================
-literal_1 = Literal(1) 
-literal_2 = Literal(2) 
-literal_5 = Literal(5) 
-literal_6 = Literal(6) 
-literal_7 = Literal(7) 
+# literal_1 = Literal(1) 
+# literal_2 = Literal(2) 
+# literal_5 = Literal(5) 
+# literal_6 = Literal(6) 
+# literal_7 = Literal(7) 
 
-literal_none = Literal(None)
+# literal_none = Literal(None)
 
-literal_1.decision_level = 1
-literal_1.determined_by = 0
-literal_1.successors = [literal_5, literal_6, literal_none]
+# literal_1.decision_level = 1
+# literal_1.determined_by = 0
+# literal_1.successors = [literal_5, literal_6, literal_none]
 
-literal_2.decision_level = 2
-literal_2.determined_by = 0
-literal_2.successors = [literal_5]
+# literal_2.decision_level = 2
+# literal_2.determined_by = 0
+# literal_2.successors = [literal_5]
 
-literal_5.decision_level = 2
-literal_5.determined_by = 1
-literal_5.successors = [literal_6, literal_7]
+# literal_5.decision_level = 2
+# literal_5.determined_by = 1
+# literal_5.successors = [literal_6, literal_7]
 
-literal_6.decision_level = 2
-literal_6.determined_by = 0
-literal_6.successors = [literal_none]
+# literal_6.decision_level = 2
+# literal_6.determined_by = 0
+# literal_6.successors = [literal_none]
 
-literal_7.decision_level = 2
-literal_7.determined_by = 0
-literal_7.successors = [literal_none]
+# literal_7.decision_level = 2
+# literal_7.determined_by = 0
+# literal_7.successors = [literal_none]
 
-literal_none.decision_level = 2
-literal_none.determined_by = 1
-literal_none.successors = []
+# literal_none.decision_level = 2
+# literal_none.determined_by = 1
+# literal_none.successors = []
 
-trail = Trail()
-trail.add_literal(literal_1)
-trail.add_literal(literal_2)
-trail.add_literal(literal_5)
-trail.add_literal(literal_6)
-trail.add_literal(literal_7)
+# trail = Trail()
+# trail.add_literal(literal_1)
+# trail.add_literal(literal_2)
+# trail.add_literal(literal_5)
+# trail.add_literal(literal_6)
+# trail.add_literal(literal_7)
 
-trail.add_literal(literal_none)
+# trail.add_literal(literal_none)
 
-print(trail.get_conflict_clause())
+# print(trail.get_learned_clause())
 
+# TEST 7:
+# ===================================
+clauses = [
+    [1, 2, 3],
+    [1, 2, -3], 
+    [-2, 4],
+    [1, -2, -4], 
+    [-1, 5, 6],
+    [-1, 5, -6],
+    [-5, -6], 
+    [-1, -5, 6]
+]
+
+clauses = [Clause([Literal(literal, decision_level=0) for literal in c]) for c in clauses]
+solver = Cdcl(clauses=clauses)
+res = solver.solve()
 

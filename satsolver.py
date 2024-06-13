@@ -257,7 +257,7 @@ class SatSolver:
         if literal is None:
             self.assignment = set()
             return False
-
+        
         solver_with_literal = SatSolver([clause[:] for clause in self.clauses])
         solver_with_literal.assignment = self.assignment.copy()
         solver_with_literal.assignment.add(literal)

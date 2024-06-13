@@ -13,11 +13,12 @@ class Trail:
         literal.assignment = literal.is_positive
         literal.decision_level = decision_level
 
-    def add_propagation_literal(self, literal):
+    def add_propagation_literal(self, literal, antecedent_clause=None):
         self.literals.append(literal)
         decision_level = self.current_decision_level()
         literal.assignment = literal.is_positive
         literal.decision_level = decision_level
+        literal.antecedent_clause = antecedent_clause
 
     def backtrack(self, level):
         if level < 0 or level >= len(self.decision_levels):
@@ -43,21 +44,38 @@ class Trail:
                 num_literals_at_current_level += 1
             if literal not in seen and literal.get_complement() not in seen:
                 seen.add(literal)
-                learned_clause.append(literal)
 
+        index = 1
         for literal in reversed(self.literals):
             if num_literals_at_current_level <= 1:
                 break
             if literal in seen or literal.get_complement() in seen:
                 antecedent_clause = literal.antecedent_clause
                 if antecedent_clause is not None:
-                    for antecedent_literal in antecedent_clause:
-                        if literal not in seen and literal.get_complement() not in seen:
-                            seen.add(literal)
-                            learned_clause.append(literal)
-                        if antecedent_literal.decision_level == current_level:
-                            num_literals_at_current_level += 1
+                    for antecedent_literal in antecedent_clause.literals:
+                        if antecedent_literal not in seen and antecedent_literal.get_complement() not in seen:
+                            seen.add(antecedent_literal)
+                            if antecedent_literal.decision_level == current_level:
+                                num_literals_at_current_level += 1
                 num_literals_at_current_level -= 1
+            index += 1
+
+        uip_index = len(self.literals) - index + 1
+        A_literals = set(self.literals[:uip_index])
+        B_literals = set(self.literals[uip_index:])
+        learned_clause_set = set()
+        for b_literal in B_literals:
+            if b_literal.antecedent_clause is not None:
+                for antecedent_literal in b_literal.antecedent_clause.literals:
+                    if antecedent_literal != b_literal and antecedent_literal != b_literal.get_complement() and antecedent_literal in A_literals or antecedent_literal.get_complement() in A_literals:
+                        if antecedent_literal.decision_level != 0:
+                            learned_clause_set.add(antecedent_literal)
+        for literal in conflict_clause.literals:
+            if literal in A_literals or literal.get_complement() in A_literals:
+                if literal.decision_level != 0:
+                    learned_clause_set.add(literal)
+
+        learned_clause = list(learned_clause_set)
 
         for literal in learned_clause:
             if literal.decision_level != current_level:
@@ -69,4 +87,7 @@ class Trail:
         return self.decision_levels[-1]
 
     def __str__(self):
+        return " -> ".join(str(literal) for literal in self.literals)
+    
+    def __repr__(self):
         return " -> ".join(str(literal) for literal in self.literals)

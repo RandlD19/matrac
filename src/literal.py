@@ -45,6 +45,11 @@ class Literal:
         if self.assignment is None:
             return False
         return self.assignment
+    
+    def is_falsified(self):
+        if self.assignment is None:
+            return False
+        return not self.assignment
 
     def is_complementary(self, other):
         return self.var == other.var and self.is_positive != other.is_positive
@@ -61,4 +66,7 @@ class Literal:
         return hash((self.var, self.is_positive))
 
     def __str__(self):
+        return f"{self.var}" if self.is_positive else f"-{self.var}"
+    
+    def __repr__(self):
         return f"{self.var}" if self.is_positive else f"-{self.var}"

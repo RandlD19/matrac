@@ -1,7 +1,8 @@
-from literal import Literal
-from trail import Trail
-from clause import Clause
-from variables import Variables
+from src.literal import Literal
+from src.trail import Trail
+from src.clause import Clause
+from src.variables import Variables
+from src.sat_solver import SATSolver
 
 # trail = Trail()
 
@@ -35,13 +36,30 @@ from variables import Variables
 # expected_clause = Clause([lit1, lit2])
 # expected_backtrack_level = 1
 
-variables = Variables(3)
-literal1 = Literal(1, True, variables)
-literal2 = Literal(2, False, variables)
-literal3 = Literal(3, True, variables)
-clause = Clause([literal1, literal2, literal3])
+variables = Variables(6)
 
-literal2.assignment = False
-literal2.decision_level = 2
-print(variables.get_value(2))
+# Definicija klavzul
+clauses = [
+    Clause([Literal(1, True, variables), Literal(2, True, variables), Literal(3, True, variables)]),   # (𝑎 ∨ 𝑏 ∨ 𝑐)
+    Clause([Literal(1, True, variables), Literal(2, True, variables), Literal(3, False, variables)]),  # (𝑎 ∨ 𝑏 ∨ ¬𝑐)
+    Clause([Literal(2, False, variables), Literal(4, True, variables)]),  # (¬𝑏 ∨ 𝑑)
+    Clause([Literal(1, True, variables), Literal(2, False, variables), Literal(4, False, variables)]),  # (𝑎 ∨ ¬𝑏 ∨ ¬𝑑)
+    Clause([Literal(1, False, variables), Literal(5, True, variables), Literal(6, True, variables)]),  # (¬𝑎 ∨ 𝑒 ∨ 𝑓)
+    Clause([Literal(1, False, variables), Literal(5, True, variables), Literal(6, False, variables)]),  # (¬𝑎 ∨ 𝑒 ∨ ¬𝑓)
+    Clause([Literal(5, False, variables), Literal(6, False, variables)]),  # (¬𝑒 ∨ ¬𝑓)
+    Clause([Literal(1, False, variables), Literal(5, False, variables), Literal(6, True, variables)])  # (¬𝑎 ∨ ¬𝑒 ∨ 𝑓)
+]
+
+# Inicializacija SAT Solverja
+solver = SATSolver(clauses, variables)
+
+# Reševanje SAT problema
+result = solver.solve()
+
+# Izpis rezultata
+print("SAT Problem Solved:", result)
+
+# literal2.assignment = False
+# literal2.decision_level = 2
+# print(variables.get_value(2))
 # true = clause.is_satisfied()

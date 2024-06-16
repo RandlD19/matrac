@@ -2,7 +2,7 @@ from src.literal import Literal
 from src.trail import Trail
 from src.clause import Clause
 from src.variables import Variables
-from src.sat_solver import SATSolver
+from cdcl_solver import SATSolver
 
 # trail = Trail()
 

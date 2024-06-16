@@ -32,3 +32,8 @@ class Variables:
 
     def set_antecedent_clause(self, var, antecedent_clause):
         self.antecedent_clauses[var] = antecedent_clause
+
+    def reset_assignments(self):
+        self.assignments = [None] * (self.num_vars + 1)
+        self.decision_levels = [None] * (self.num_vars + 1)
+        self.antecedent_clauses = [None] * (self.num_vars + 1)

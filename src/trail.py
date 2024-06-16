@@ -19,6 +19,8 @@ class Trail:
         literal.assignment = literal.is_positive
         literal.decision_level = decision_level
         literal.antecedent_clause = antecedent_clause
+        if antecedent_clause:
+            antecedent_clause.delete = False
 
     def backtrack(self, level):
         if level < 0 or level >= len(self.decision_levels):
@@ -81,7 +83,7 @@ class Trail:
             if literal.decision_level != current_level:
                 backtrack_level = max(backtrack_level, literal.decision_level)
 
-        return Clause(learned_clause), backtrack_level
+        return Clause(learned_clause, learned_clause=True, delete=False), backtrack_level
 
     def current_decision_level(self):
         return self.decision_levels[-1]

@@ -1,5 +1,6 @@
 # Testni primeri
-from satsolver import SatSolver
+from src.dpll_solver import DPLLSolver
+from src.cdcl_solver import CDCLSolver
 # Testni primer 1: Zadovoljiv problem
 clauses1 = [
     [1, -3, 4],
@@ -182,33 +183,37 @@ clauses12 = [
 ]
 
 
-# assignment4 = set([1, -3])
-# assignment5 = set([1, -3])
-# assignment6 = set([1, -3])
-assignment7 = set()
+# # assignment4 = set([1, -3])
+# # assignment5 = set([1, -3])
+# # assignment6 = set([1, -3])
+# assignment7 = set()
 
-# solver4 = SatSolver(clauses4)
-# solver5 = SatSolver(clauses5)
-# solver6 = SatSolver(clauses6)
-solver7 = SatSolver(clauses12)
-# solver4.assignment = assignment4
-# solver5.assignment = assignment5
-# solver6.assignment = assignment6
-solver7.assignment = assignment7
-# simp4 = solver4.simplify()
-# simp5 = solver5.simplify()
-# simp6 = solver6.simplify()
-simp7 = solver7.solve(3)
+# # solver4 = SatSolver(clauses4)
+# # solver5 = SatSolver(clauses5)
+# # solver6 = SatSolver(clauses6)
+# solver7 = DPLLSolver(clauses11)
+# # solver4.assignment = assignment4
+# # solver5.assignment = assignment5
+# # solver6.assignment = assignment6
+# solver7.assignment = assignment7
+# # simp4 = solver4.simplify()
+# # simp5 = solver5.simplify()
+# # simp6 = solver6.simplify()
+# simp7 = solver7.solve(0)
 
-# print(solver4.clauses)
-# print(solver5.clauses)
-# print(solver6.clauses)
-print(simp7)
-print(solver7.assignment)
-# print(solver4.clauses)
-# solver2 = SatSolver(clauses2)
-# solver3 = SatSolver(clauses3)
+# # print(solver4.clauses)
+# # print(solver5.clauses)
+# # print(solver6.clauses)
+# print(simp7)
+# print(solver7.assignment)
+# # print(solver4.clauses)
+# # solver2 = SatSolver(clauses2)
+# # solver3 = SatSolver(clauses3)
 
-# print("Testni primer 1:", "Zadovoljiv" if solver1.solve() else "Nezadovoljiv")
-# print("Testni primer 2:", "Zadovoljiv" if solver2.solve() else "Nezadovoljiv")
-# print("Testni primer 3:", "Zadovoljiv" if solver3.solve() else "Nezadovoljiv")
+# # print("Testni primer 1:", "Zadovoljiv" if solver1.solve() else "Nezadovoljiv")
+# # print("Testni primer 2:", "Zadovoljiv" if solver2.solve() else "Nezadovoljiv")
+# # print("Testni primer 3:", "Zadovoljiv" if solver3.solve() else "Nezadovoljiv")
+
+solver = CDCLSolver(clauses1, None)
+is_sat, assignment = solver.solve()
+print(is_sat, assignment)

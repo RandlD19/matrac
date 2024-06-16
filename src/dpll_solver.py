@@ -1,9 +1,10 @@
-class SatSolver:
-    def __init__(self, clauses):
+class DPLLSolver:
+    def __init__(self, clauses, stop_flag):
         self.clauses = [clause[:] for clause in clauses]
         self.assignment = set()
         self.counter = self.count_occurrences()
         self.conflict_counter = self.init_conflict_counter()
+        self.stop_flag = stop_flag
 
     def init_conflict_counter(self):
         conflict_counter = {}
@@ -115,167 +116,196 @@ class SatSolver:
                 return literal
             elif counts[1] > 0 and counts[0] == 0:
                 return -literal
+            
+    def add_unset_variables(self):
+        for var in self.counter.keys():
+            if var not in self.assignment and -var not in self.assignment:
+                self.assignment.add(var)
 
     def dpll_base(self):
         simplified = self.simplify()
         if simplified == True:
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
         elif simplified == False:
             self.assignment = set()
-            return False
+            return (False, None)
         if not self.clauses:
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
         
         literal = self.choose_literal()
         if literal is None:
             self.assignment = set()
-            return False
+            return (False, None)
 
-        solver_with_literal = SatSolver([clause[:] for clause in self.clauses])
+        solver_with_literal = DPLLSolver([clause[:] for clause in self.clauses], self.stop_flag)
         solver_with_literal.assignment = self.assignment.copy()
         solver_with_literal.assignment.add(literal)
-        if solver_with_literal.dpll_base():
+        if solver_with_literal.dpll_base()[0]:
             self.assignment = solver_with_literal.assignment
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
 
-        solver_with_neg_literal = SatSolver([clause[:] for clause in self.clauses])
+        solver_with_neg_literal = DPLLSolver([clause[:] for clause in self.clauses], self.stop_flag)
         solver_with_neg_literal.assignment = self.assignment.copy()
         solver_with_neg_literal.assignment.add(-literal)
-        if solver_with_neg_literal.dpll_base():
+        if solver_with_neg_literal.dpll_base()[0]:
             self.assignment = solver_with_neg_literal.assignment
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
 
         self.assignment = set()
-        return False
+        return (False, None)
     
     def dpll_up(self):
         simplified = self.simplify()
+        if self.stop_flag.is_set():
+                return (None, None)
         if simplified == True:
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
         elif simplified == False:
             self.assignment = set()
-            return False
+            return (False, None)
         if not self.unit_propagate():
             self.assignment = set()
-            return False
+            return (False, None)
         if not self.clauses:
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
         
         literal = self.choose_literal()
         if literal is None:
             self.assignment = set()
-            return False
+            return (False, None)
 
-        solver_with_literal = SatSolver([clause[:] for clause in self.clauses])
+        solver_with_literal = DPLLSolver([clause[:] for clause in self.clauses], self.stop_flag)
         solver_with_literal.assignment = self.assignment.copy()
         solver_with_literal.assignment.add(literal)
-        if solver_with_literal.dpll_up():
+        if solver_with_literal.dpll_up()[0]:
             self.assignment = solver_with_literal.assignment
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
 
-        solver_with_neg_literal = SatSolver([clause[:] for clause in self.clauses])
+        solver_with_neg_literal = DPLLSolver([clause[:] for clause in self.clauses], self.stop_flag)
         solver_with_neg_literal.assignment = self.assignment.copy()
         solver_with_neg_literal.assignment.add(-literal)
-        if solver_with_neg_literal.dpll_up():
+        if solver_with_neg_literal.dpll_up()[0]:
             self.assignment = solver_with_neg_literal.assignment
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
 
         self.assignment = set()
-        return False
+        return (False, None)
 
     def dpll_up_pl(self):
+        if self.stop_flag.is_set():
+            return (None, None)
         simplified = self.simplify()
         if simplified == True:
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
         elif simplified == False:
             self.assignment = set()
-            return False
+            return (False, None)
         if not self.unit_propagate():
             self.assignment = set()
-            return False
+            return (False, None)
         if not self.clauses:
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
         literal = self.find_pure_literal()
         if literal:
             self.assignment.add(literal)
             self.simplify()
             if simplified == True:
-                return True
+                self.add_unset_variables()
+                return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
             elif simplified == False:
                 self.assignment = set()
-                return False
+                return (False, None)
         if not self.clauses:
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
         
         literal = self.choose_literal()
         if literal is None:
             self.assignment = set()
-            return False
+            return (False, None)
 
-        solver_with_literal = SatSolver([clause[:] for clause in self.clauses])
+        solver_with_literal = DPLLSolver([clause[:] for clause in self.clauses], self.stop_flag)
         solver_with_literal.assignment = self.assignment.copy()
         solver_with_literal.assignment.add(literal)
-        if solver_with_literal.dpll_up_pl():
+        if solver_with_literal.dpll_up_pl()[0]:
             self.assignment = solver_with_literal.assignment
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
 
-        solver_with_neg_literal = SatSolver([clause[:] for clause in self.clauses])
+        solver_with_neg_literal = DPLLSolver([clause[:] for clause in self.clauses], self.stop_flag)
         solver_with_neg_literal.assignment = self.assignment.copy()
         solver_with_neg_literal.assignment.add(-literal)
-        if solver_with_neg_literal.dpll_up_pl():
+        if solver_with_neg_literal.dpll_up_pl()[0]:
             self.assignment = solver_with_neg_literal.assignment
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
 
         self.assignment = set()
-        return False
+        return (False, None)
     
     def dpll_vsids(self):
         simplified = self.simplify()
         if simplified == True:
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
         elif simplified == False:
             self.assignment = set()
-            return False
+            return (False, None)
         if not self.unit_propagate():
             self.assignment = set()
-            return False
+            return (False, None)
         if not self.clauses:
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
         literal = self.find_pure_literal()
         if literal:
             self.assignment.add(literal)
             self.simplify()
             if simplified == True:
-                return True
+                self.add_unset_variables()
+                return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
             elif simplified == False:
                 self.assignment = set()
-                return False
+                return (False, None)
         if not self.clauses:
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
         
         literal = self.choose_literal_vsids()
         if literal is None:
             self.assignment = set()
-            return False
+            return (False, None)
         
-        solver_with_literal = SatSolver([clause[:] for clause in self.clauses])
+        solver_with_literal = DPLLSolver([clause[:] for clause in self.clauses], self.stop_flag)
         solver_with_literal.assignment = self.assignment.copy()
         solver_with_literal.assignment.add(literal)
-        if solver_with_literal.dpll_vsids():
+        if solver_with_literal.dpll_vsids()[0]:
             self.assignment = solver_with_literal.assignment
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
 
-        solver_with_neg_literal = SatSolver([clause[:] for clause in self.clauses])
+        solver_with_neg_literal = DPLLSolver([clause[:] for clause in self.clauses], self.stop_flag)
         solver_with_neg_literal.assignment = self.assignment.copy()
         solver_with_neg_literal.assignment.add(-literal)
-        if solver_with_neg_literal.dpll_vsids():
+        if solver_with_neg_literal.dpll_vsids()[0]:
             self.assignment = solver_with_neg_literal.assignment
-            return True
+            self.add_unset_variables()
+            return (True, sorted(list(self.assignment), key=lambda x:abs(x)))
 
         self.assignment = set()
-        return False
+        return (False, None)
 
-    def solve(self, method=2):
+    def solve(self, method=1):
         if method == 0:
             return self.dpll_base()
         elif method == 1:
@@ -284,9 +314,5 @@ class SatSolver:
             return self.dpll_up_pl()
         elif method == 3:
             return self.dpll_vsids()
-
-class CDCLSatSolver:
-    def __init__(self, clauses):
-        self.clauses = clauses
 
     

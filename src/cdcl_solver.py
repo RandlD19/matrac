@@ -135,35 +135,23 @@ class CDCLSolver:
         decision_level = 0
         while True:
             if self.stop_flag and self.stop_flag.is_set():
-                print(self.propagation_time)
-                print(self.conflict_count)
                 return (None, None)
             if self.conflict_count > self.cleanup_interval:
                 self.remove_learned_clauses()
                 self.conflict_count = 0
-            # start = time.time()
             unit_propagation, conflict_clause = self.unit_propagation()
-            # end = time.time()
-            # self.propagation_time += end-start
-            # if end-start > 0.01:
-            #     print(f"Time: {end-start}s")
             if unit_propagation is None:
-                print(self.propagation_time)
-                print(self.conflict_count)
                 return (None, None)
             if not unit_propagation:
                 if decision_level == 0:
                     return (False, None)
-                # start = time.time()
-                self.vsids_update(conflict_clause)  # Update VSIDS scores on conflict
+                self.vsids_update(conflict_clause) 
                 self.conflict_count += 1
                 self.conflicts_since_last_decay += 1
                 if self.conflicts_since_last_decay >= 50:
                     self.vsids_decay()
                     self.conflicts_since_last_decay = 0
                 learned_clause, backtrack_level = self.trail.analyze_conflict(conflict_clause)
-                # end = time.time()
-                # print(f"Time: {end-start}s")
                 if backtrack_level < 0:
                     return  (False, None)
                 self.trail.backtrack(backtrack_level)
@@ -193,16 +181,3 @@ class CDCLSolver:
         best_var = max(unassigned_vars, key=lambda var: self.scores[var])
         return Literal(best_var, True, self.variables)
 
-    # def select_unassigned_variable(self):
-    #     # literal_var = input("Vnesi literal: ")
-    #     # if literal_var == "None":
-    #     #     return None
-    #     # literal_var = int(literal_var)
-    #     # literal =  Literal(abs(literal_var), True if literal_var > 0 else False, self.variables)
-    #     # return literal
-    #     num_vars_list = list(range(1, self.variables.num_vars + 1 ))
-    #     random.shuffle(num_vars_list)
-    #     for var in num_vars_list:
-    #         if not self.variables.is_assigned(var):
-    #             return Literal(var, True, self.variables)
-    #     return None

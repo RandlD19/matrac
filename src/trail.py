@@ -89,7 +89,7 @@ class Trail:
         return self.decision_levels[-1]
 
     def __str__(self):
-        return " -> ".join(str(literal) for literal in self.literals)
+        return " -> ".join(str(literal) + f"_dec({literal.decision_level})_clause({literal.antecedent_clause})" for literal in self.literals)
     
     def __repr__(self):
-        return " -> ".join(str(literal) for literal in self.literals)
+        return " -> ".join(str(literal) + f"_dec({literal.decision_level})_clause({literal.antecedent_clause})" for literal in self.literals)

@@ -32,7 +32,7 @@ CDCL je napredna različica DPLL algoritma, ki vključuje učenje klavzul na pod
 - `test_cases/`:
   - `benchmark_problems/`: Benchmark problemi za testiranje solverja.
   - `random_problems/`: Naključno generirani problemi za testiranje solverja.
-- `tests/`:
+- `tests/`: Unit testi za posamezne razrede
   - `test_cdcl_solver.py`
   - `test_clause.py`
   - `test_dpll_solver.py`
@@ -47,3 +47,25 @@ Za zagon SAT solverja, zaženite `main.py`:
 
 ```bash
 python main.py
+```
+
+## Uporaba programa
+
+### 1. Vnos SAT problema
+
+V začetnem delu programa lahko vnesete SAT problem v CNF obliki. SAT problem lahko vnesete ročno, naložite iz datoteke, ali pa zgenerirate naključni primer.
+
+![Vnos SAT problema](reports/images/program_sat_vnos.png)
+
+### 2. Izbira metode reševanja
+
+V drugem delu izberete želeno metodo reševanja. Program ponuja dve metodi: DPLL (Davis-Putnam-Logemann-Loveland) in CDCL (Conflict-Driven Clause Learning).
+
+![Izbira metode reševanja](reports/images/program_sat_izbira_metode.png)
+
+### 3. Reševanje problema
+
+V tretjem delu programa lahko rešite SAT problem in pogledate čas, potreben za reševanje. Če program predolgo rešuje problem, ga lahko tudi zaustavite.
+
+![Reševanje problema](reports/images/program_sat_resevanje.png)
+

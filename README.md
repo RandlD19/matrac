@@ -36,9 +36,8 @@ CDCL je napredna različica DPLL algoritma, ki vključuje učenje klavzul na pod
   - `benchmark_problems/`: Benchmark problemi za testiranje solverja.
   - `random_problems/`: Naključno generirani problemi za testiranje solverja.
 - `tests/`: Unit testi za posamezne razrede
-  - `test_cdcl_solver.py`
+  - `test_sat_solver.py`
   - `test_clause.py`
-  - `test_dpll_solver.py`
   - `test_literal.py`
   - `test_trail.py`
   - `test_two_watched_literals.py`

@@ -52,78 +52,78 @@ class CDCLSolver:
         return clauses
 
     def unit_propagation(self):
-        while True:
-            if self.stop_flag and self.stop_flag.is_set():
-                return (None, None)
+        # while True:
+        #     if self.stop_flag and self.stop_flag.is_set():
+        #         return (None, None)
 
-            unit_clause = None
+        #     unit_clause = None
 
-            for literal in self.trail.literals:
-                if unit_clause:
-                    break
-                complement = literal.get_complement()
-                if complement in self.twl.watch_list:
-                    clauses_to_check = list(self.twl.get_clauses(complement).copy())
+        #     for literal in self.trail.literals:
+        #         if unit_clause:
+        #             break
+        #         complement = literal.get_complement()
+        #         if complement in self.twl.watch_list:
+        #             clauses_to_check = list(self.twl.get_clauses(complement).copy())
                     
-                    for clause in clauses_to_check:
-                        if unit_clause:
-                            break
-                        if clause.is_satisfied():
-                            continue
-                        if clause.watch1 == complement:
-                            other_watch = clause.watch2
-                        else:
-                            other_watch = clause.watch1
+        #             for clause in clauses_to_check:
+        #                 if unit_clause:
+        #                     break
+        #                 if clause.is_satisfied():
+        #                     continue
+        #                 if clause.watch1 == complement:
+        #                     other_watch = clause.watch2
+        #                 else:
+        #                     other_watch = clause.watch1
 
-                        found_new_watch = False
+        #                 found_new_watch = False
                         
-                        for lit in clause.literals:
-                            if lit != complement and lit != other_watch and not self.variables.is_assigned(lit.var):
-                                self.twl.update_watch(clause, complement, lit)
-                                found_new_watch = True
-                                break
-                        if not found_new_watch:
-                            if not self.variables.is_assigned(other_watch.var):
-                                unit_clause = clause
-                            elif self.variables.get_value(other_watch.var) == (not other_watch.is_positive):
-                                return (False, clause)
+        #                 for lit in clause.literals:
+        #                     if lit != complement and lit != other_watch and not self.variables.is_assigned(lit.var):
+        #                         self.twl.update_watch(clause, complement, lit)
+        #                         found_new_watch = True
+        #                         break
+        #                 if not found_new_watch:
+        #                     if not self.variables.is_assigned(other_watch.var):
+        #                         unit_clause = clause
+        #                     elif self.variables.get_value(other_watch.var) == (not other_watch.is_positive):
+        #                         return (False, clause)
 
-            if unit_clause is None:
-                return (True, None)
+        #     if unit_clause is None:
+        #         return (True, None)
 
-            self.trail.add_propagation_literal(other_watch, unit_clause)
+        #     self.trail.add_propagation_literal(other_watch, unit_clause)
 
             # is_consistent, conflict_clause = self.is_consistent()
             # if not is_consistent:
             #     return False, conflict_clause
 
 
-        # while True:
-        #     unit_clause = None
-        #     # start = time.time()
-        #     for clause in self.clauses:
-        #         if not clause.is_satisfied():
-        #             unassigned_literals = [lit for lit in clause.literals if not self.variables.is_assigned(lit.var)]
-        #             if len(unassigned_literals) == 1:
-        #                 unit_clause = clause
-        #                 break
-        #     end = time.time()
-        #     # print(f"Time: {end-start}s")
-        #     # self.propagation_time += end-start
-        #     if unit_clause is None:
-        #         return (True, None)
+        while True:
+            unit_clause = None
+            # start = time.time()
+            for clause in self.clauses:
+                if not clause.is_satisfied():
+                    unassigned_literals = [lit for lit in clause.literals if not self.variables.is_assigned(lit.var)]
+                    if len(unassigned_literals) == 1:
+                        unit_clause = clause
+                        break
+            end = time.time()
+            # print(f"Time: {end-start}s")
+            # self.propagation_time += end-start
+            if unit_clause is None:
+                return (True, None)
 
-        #     unit_literal = unassigned_literals[0]
+            unit_literal = unassigned_literals[0]
 
-        #     self.trail.add_propagation_literal(unit_literal, unit_clause)
+            self.trail.add_propagation_literal(unit_literal, unit_clause)
 
-        #     start = time.time()
-        #     is_consistent, conflict_clause = self.is_consistent()
-        #     if not is_consistent:
-        #         self.conflict_count += 1
-        #         return (False, conflict_clause)
-        #     end = time.time()
-        #     self.propagation_time += end-start
+            start = time.time()
+            is_consistent, conflict_clause = self.is_consistent()
+            if not is_consistent:
+                self.conflict_count += 1
+                return (False, conflict_clause)
+            # end = time.time()
+            # self.propagation_time += end-start
 
     def is_consistent(self):
         for clause in self.clauses:

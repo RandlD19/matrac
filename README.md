@@ -1,4 +1,4 @@
-# SAT Solver Repository
+# SAT Solver
 
 ## Kratek opis problema SAT
 
@@ -8,11 +8,14 @@ SAT (Boolean satisfiability problem) je problem določanja, ali obstaja način z
 
 ### DPLL (Davis-Putnam-Logemann-Loveland) algoritem
 
-DPLL je algoritem za reševanje SAT problema, ki temelji na rekurzivnem razcepu in zmanjšanju problema. Algoritem uporablja tehnike, kot so enotna propagacija (unit propagation) in heuristika čistega literala (pure literal heuristic), za poenostavitev formule, preden se rekurzivno razcepi na podprobleme.
+DPLL je algoritem za reševanje SAT problema, ki temelji na rekurzivnem razcepu in zmanjšanju problema. Algoritem uporablja tehnike, kot so enotna propagacija (unit propagation) in heuristika čistega literala (pure literal heuristic), za poenostavitev formule, preden se rekurzivno razcepi na podprobleme. Implementirana je tudi heuristika za pametnejšo izbiro literala VSIDS.
 
 ### CDCL (Conflict-Driven Clause Learning) algoritem
 
-CDCL je napredna različica DPLL algoritma, ki vključuje učenje klavzul na podlagi konfliktov, da bi preprečil ponavljanje istih napak. CDCL uporablja napredne heuristike za izbiro spremenljivk in tehnike, kot so backjumping, da se učinkovito premika po iskalnem prostoru.
+CDCL je napredna različica DPLL algoritma, ki vključuje učenje klavzul na podlagi konfliktov, da bi preprečil ponavljanje istih napak. CDCL uporablja napredne heuristike za izbiro spremenljivk in tehnike, kot so backjumping, da se učinkovito premika po iskalnem prostoru. Implementirani so tudi pogosti napredni pristopi za učinkovitejše delovanje kot so:
+- Two watched literal (optimizacija prostora in časa)
+- VSIDS (optimizacija časa)
+- Brisanje naučenih klavzul (optimizacija prostora in časa) 
 
 ## Struktura programa
 

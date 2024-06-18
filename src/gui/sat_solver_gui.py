@@ -164,20 +164,33 @@ class SATSolverGUI:
         end_time = time.time()
         if isinstance(result, tuple):  
             result = result[-1]
+            computation_time = end_time - self.start_time
+            self.start_time = None
+            self.time_label.config(text=f"Time: {computation_time:.2f} seconds")
+
+            self.output_text.delete(1.0, tk.END)
+            if result:
+                self.output_text.insert(tk.END, "SATISFIABLE\n")
+                self.output_text.insert(tk.END, ", ".join(list(map(str,result))))
+            else:
+                if (solver.stop_flag.is_set()):
+                    self.output_text.insert(tk.END, "FINISHED\n")
+                else:
+                    self.output_text.insert(tk.END, "UNSATISFIABLE\n")
+            self.stop_button.config(state=tk.DISABLED) 
+            self.solve_button.config(state=tk.NORMAL)
         else:
             result = solver.get_model()
-        computation_time = end_time - self.start_time
-        self.start_time = None
-        self.time_label.config(text=f"Time: {computation_time:.2f} seconds")
+            computation_time = end_time - self.start_time
+            self.start_time = None
+            self.time_label.config(text=f"Time: {computation_time:.2f} seconds")
 
-        self.output_text.delete(1.0, tk.END)
-        if result:
-            self.output_text.insert(tk.END, "SATISFIABLE\n")
-            self.output_text.insert(tk.END, ", ".join(list(map(str,result))))
-        else:
-            if (solver.stop_flag.is_set()):
-                self.output_text.insert(tk.END, "FINISHED\n")
+            self.output_text.delete(1.0, tk.END)
+            if result:
+                self.output_text.insert(tk.END, "SATISFIABLE\n")
+                self.output_text.insert(tk.END, ", ".join(list(map(str,result))))
             else:
                 self.output_text.insert(tk.END, "UNSATISFIABLE\n")
-        self.stop_button.config(state=tk.DISABLED) 
-        self.solve_button.config(state=tk.NORMAL)
+            self.stop_button.config(state=tk.DISABLED) 
+            self.solve_button.config(state=tk.NORMAL)
+
